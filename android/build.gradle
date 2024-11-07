@@ -25,7 +25,11 @@ android {
         targetSdkVersion project.hasProperty('targetSdkVersion') ? rootProject.ext.targetSdkVersion : 34
         versionCode 1
         versionName "1.0"
+        ndkVersion = "25.2.9519653"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86_64', 'x86'
+        }
     }
     buildTypes {
         release {
@@ -40,15 +44,23 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+    sourceSets {
+        main {
+            assets.srcDirs += "$buildDir/generated/assets"
+        }
+    }
 }
 
 repositories {
     google()
     mavenCentral()
+    gradlePluginPortal() 
 }
 
 
 dependencies {
+    implementation 'net.java.dev.jna:jna:5.13.0@aar'
+    implementation group: 'com.alphacephei', name: 'vosk-android', version: '0.3.47'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':capacitor-android')
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
@@ -56,3 +68,20 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
 }
+
+def modelDir = "${projectDir}/src/main/assets/vosk-model-small-pt"
+def generatedDir = "${buildDir}/generated/assets/vosk-model-small-pt"
+
+
+tasks.register('genUUID') {
+    def uuid = UUID.randomUUID().toString()
+    def odir = file("$buildDir/generated/assets/vosk-model-small-pt")
+    def ofile = file("$odir/uuid")
+    println("ofile: "+ ofile)
+    doLast {
+        mkdir odir
+        ofile.text = uuid
+    }
+}
+
+preBuild.dependsOn(genUUID)
