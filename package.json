@@ -1,6 +1,6 @@
 {
-  "name": "@capacitor-community/vosk",
-  "version": "0.0.1",
+  "name": "vosk-offline-speech-recognition",
+  "version": "1.0.1",
   "description": "Offline speech recognition",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -15,7 +15,7 @@
     "Package.swift",
     "CapacitorCommunityVosk.podspec"
   ],
-  "author": "",
+  "author": "rubendsm",
   "license": "MIT",
   "repository": {
     "type": "git",
