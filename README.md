@@ -18,7 +18,7 @@ You will need to download the Vosk models from the following link:
 ## Install
 
 ```bash
-npm npm i vosk-offline-speech-recognition
+npm i vosk-offline-speech-recognition
 npx cap sync
 ```
 
