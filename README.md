@@ -13,14 +13,13 @@ npx cap sync
 
 <docgen-index>
 
-* [`echo(...)`](#echo)
-* [`initModel()`](#initmodel)
 * [`startListening()`](#startlistening)
 * [`stopListening()`](#stoplistening)
+* [`pauseListening()`](#pauselistening)
+* [`resumeListening()`](#resumelistening)
 * [`isListening()`](#islistening)
 * [`requestMicrophonePermission()`](#requestmicrophonepermission)
 * [`addListener('partialResult', ...)`](#addlistenerpartialresult-)
-* [`addListener('finalResult', ...)`](#addlistenerfinalresult-)
 * [`addListener('onResult', ...)`](#addlisteneronresult-)
 * [Interfaces](#interfaces)
 
@@ -28,30 +27,6 @@ npx cap sync
 
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
-
-### echo(...)
-
-```typescript
-echo(options: { value: string; }) => Promise<{ value: string; }>
-```
-
-| Param         | Type                            |
-| ------------- | ------------------------------- |
-| **`options`** | <code>{ value: string; }</code> |
-
-**Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
-
---------------------
-
-
-### initModel()
-
-```typescript
-initModel() => Promise<void>
-```
-
---------------------
-
 
 ### startListening()
 
@@ -71,13 +46,31 @@ stopListening() => Promise<void>
 --------------------
 
 
+### pauseListening()
+
+```typescript
+pauseListening() => Promise<void>
+```
+
+--------------------
+
+
+### resumeListening()
+
+```typescript
+resumeListening() => Promise<void>
+```
+
+--------------------
+
+
 ### isListening()
 
 ```typescript
-isListening() => Promise<{ listening: boolean; }>
+isListening() => Promise<{ isListening: boolean; }>
 ```
 
-**Returns:** <code>Promise&lt;{ listening: boolean; }&gt;</code>
+**Returns:** <code>Promise&lt;{ isListening: boolean; }&gt;</code>
 
 --------------------
 
@@ -94,29 +87,13 @@ requestMicrophonePermission() => Promise<void>
 ### addListener('partialResult', ...)
 
 ```typescript
-addListener(eventName: 'partialResult', listener: (result: { partial: string; }) => void) => Promise<PluginListenerHandle>
+addListener(eventName: 'partialResult', listener: (data: { matches: string; }) => void) => Promise<PluginListenerHandle>
 ```
 
-| Param           | Type                                                   |
-| --------------- | ------------------------------------------------------ |
-| **`eventName`** | <code>'partialResult'</code>                           |
-| **`listener`**  | <code>(result: { partial: string; }) =&gt; void</code> |
-
-**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
-
---------------------
-
-
-### addListener('finalResult', ...)
-
-```typescript
-addListener(eventName: 'finalResult', listener: (result: { partial: string; final: string; }) => void) => Promise<PluginListenerHandle>
-```
-
-| Param           | Type                                                                  |
-| --------------- | --------------------------------------------------------------------- |
-| **`eventName`** | <code>'finalResult'</code>                                            |
-| **`listener`**  | <code>(result: { partial: string; final: string; }) =&gt; void</code> |
+| Param           | Type                                                 |
+| --------------- | ---------------------------------------------------- |
+| **`eventName`** | <code>'partialResult'</code>                         |
+| **`listener`**  | <code>(data: { matches: string; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
@@ -126,13 +103,13 @@ addListener(eventName: 'finalResult', listener: (result: { partial: string; fina
 ### addListener('onResult', ...)
 
 ```typescript
-addListener(eventName: 'onResult', listener: (result: { partial: string; final: string; }) => void) => Promise<PluginListenerHandle>
+addListener(eventName: 'onResult', listener: (data: { final: string; }) => void) => Promise<PluginListenerHandle>
 ```
 
-| Param           | Type                                                                  |
-| --------------- | --------------------------------------------------------------------- |
-| **`eventName`** | <code>'onResult'</code>                                               |
-| **`listener`**  | <code>(result: { partial: string; final: string; }) =&gt; void</code> |
+| Param           | Type                                               |
+| --------------- | -------------------------------------------------- |
+| **`eventName`** | <code>'onResult'</code>                            |
+| **`listener`**  | <code>(data: { final: string; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 

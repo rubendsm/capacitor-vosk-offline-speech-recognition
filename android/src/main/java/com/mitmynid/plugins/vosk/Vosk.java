@@ -23,7 +23,7 @@ public class Vosk implements RecognitionListener {
     private StringBuilder partialResults = new StringBuilder();
     private String finalResult = "";
 
-    // Método para inicializar o modelo
+    // Método para iniciar o modelo
     public void initModel(Context context) {
         try {
             AssetManager assetManager = context.getAssets();
@@ -59,7 +59,24 @@ public class Vosk implements RecognitionListener {
         }
     }
 
-    // Métodos para os listeners do reconhecimento de fala
+    public void pause(boolean checked) {
+        if (speechService != null) {
+            speechService.setPause(checked);
+            if (checked){
+                isListening = false;
+            } else {
+                isListening = true;
+            }
+        }
+    }
+
+    /*Resets recognizer in a thread, starts recognition over again*/
+    public void reset() {
+        if (speechService != null) {
+            speechService.reset();
+        }
+    }
+
     @Override
     public void onPartialResult(String hypothesis) {
         if (hypothesis != null && !hypothesis.isEmpty()) {
@@ -79,12 +96,12 @@ public class Vosk implements RecognitionListener {
 
     @Override
     public void onError(Exception exception) {
-        Log.e("Vosk", "Erro no reconhecimento de fala: " + exception.getMessage());
+        Log.e("Vosk", "Error on speech recognition" + exception.getMessage());
     }
 
     @Override
     public void onTimeout() {
-        Log.e("Vosk", "Reconhecimento de fala expirou.");
+        Log.e("Vosk", "Expired");
     }
 
     // Getter para o estado de escuta

@@ -21,7 +21,8 @@ public class VoskPlugin extends Plugin {
 
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 1;
     private Vosk voskImplementation = new Vosk();
-
+    RecognitionListener recognitionListener;
+    private StringBuilder partialResults = new StringBuilder();
 
     @Override
     public void load() {
@@ -30,10 +31,12 @@ public class VoskPlugin extends Plugin {
                 .getWebView()
                 .post(
                         () -> {
-
+                            Context context = getContext();
+                            voskImplementation.initModel(context);
                         }
                 );
     }
+
 
     // Request microphone permission
     @PluginMethod
@@ -47,6 +50,7 @@ public class VoskPlugin extends Plugin {
     }
 
     // Initialize speech recognition model
+    // Does not use because now the model is loaded on plugin load(). Can use it after when i wanna especify the model on ionic interface
     @PluginMethod
     public void initModel(PluginCall call) {
         Context context = getContext();
@@ -65,28 +69,59 @@ public class VoskPlugin extends Plugin {
             requestMicrophonePermission(call);
 
             RecognitionListener recognitionListener = new RecognitionListener() {
+                /*Called when partial recognition result is available.*/
                 @Override
                 public void onPartialResult(String hypothesis) {
-                    Log.d("Vosk", "Received partial result: " + hypothesis);
-                    JSObject result = new JSObject();
-                    result.put("partial", hypothesis);
-                    notifyListeners("partialResult", result);
+                    if (hypothesis != null && !hypothesis.isEmpty()) {
+                        try {
+                            JSObject hypothesisObj = new JSObject(hypothesis);
+                            String partialResult = hypothesisObj.getString("partial");
+
+                            JSObject result = new JSObject();
+                            result.put("matches", partialResult);
+
+                            notifyListeners("partialResult", result);
+
+                            //Log.d("Vosk", "Partial result enviado para listener: " + partialResult);
+                        } catch (Exception e) {
+                            call.reject("Failed to process partial result: " + e.getMessage());
+                        }
+                    }
                 }
 
+                /*Called after silence occured*/
                 @Override
                 public void onResult(String hypothesis) {
-                    Log.d("Vosk", "Final result: " + hypothesis);
-                    JSObject result = new JSObject();
-                    result.put("result", hypothesis);
-                    notifyListeners("onResult", result);
+                    //Log.d("Vosk", "result: " + hypothesis);
+                    try {
+                        JSObject hypothesisObj = new JSObject(hypothesis);
+                        String resultText = hypothesisObj.getString("text");
+
+                        JSObject result = new JSObject();
+                        result.put("result", resultText);
+
+                        notifyListeners("onResult", result);
+                    } catch (Exception e) {
+                        //Log.e("Vosk", "Erro ao processar hypothesis: " + e.getMessage());
+                        call.reject("Failed to process result: " + e.getMessage());
+                    }
                 }
 
+                /*Called after stream end*/
                 @Override
                 public void onFinalResult(String hypothesis) {
-                    Log.d("Vosk", "Final result (finalResult): " + hypothesis);
-                    JSObject result = new JSObject();
-                    result.put("finalResult", hypothesis);
-                    notifyListeners("finalResult", result);
+                    try {
+                        JSObject hypothesisObj = new JSObject(hypothesis);
+                        String finalText = hypothesisObj.getString("text");
+
+                        JSObject result = new JSObject();
+                        result.put("final", finalText);
+
+                        notifyListeners("finalResult", result);
+                    } catch (Exception e) {
+                        //Log.e("Vosk", "Erro ao processar hypothesis: " + e.getMessage());
+                        call.reject("Failed to process final result: " + e.getMessage());
+                    }
                 }
 
                 @Override
@@ -120,6 +155,26 @@ public class VoskPlugin extends Plugin {
         }
     }
 
+    @PluginMethod
+    public void pauseListening(PluginCall call) {
+        try {
+            voskImplementation.pause(true);
+            call.resolve();
+        } catch (Exception e) {
+            call.reject("Failed to pause speech recognition: " + e.getMessage());
+        }
+    }
+
+    @PluginMethod
+    public void resumeListening(PluginCall call) {
+        try {
+            voskImplementation.pause(false);
+            call.resolve();
+        } catch (Exception e) {
+            call.reject("Failed to resume speech recognition: " + e.getMessage());
+        }
+    }
+
     // Check if recognition is active
     @PluginMethod
     public void isListening(PluginCall call) {
@@ -127,21 +182,5 @@ public class VoskPlugin extends Plugin {
         JSObject ret = new JSObject();
         ret.put("isListening", isListening);
         call.resolve(ret);
-    }
-
-    // Remove active listeners
-    @PluginMethod
-    public void removeListeners(PluginCall call) {
-        try {
-            if (recognitionListener != null) {
-                voskImplementation.stopListening();
-                recognitionListener = null; // Clear reference to avoid memory leak
-                call.resolve();
-            } else {
-                call.reject("No active listener to remove.");
-            }
-        } catch (Exception e) {
-            call.reject("Failed to remove listeners: " + e.getMessage());
-        }
     }
 }
