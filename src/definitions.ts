@@ -1,4 +1,16 @@
-import type { PluginListenerHandle } from '@capacitor/core';
+import type { PermissionState, PluginListenerHandle } from '@capacitor/core';
+
+export interface PermissionStatus {
+  /**
+   * Permission state for speechRecognition alias.
+   *
+   * On Android it requests/checks RECORD_AUDIO permission
+   *
+   * On iOS it requests/checks the speech recognition and microphone permissions.
+   *
+   */
+  speechRecognition: PermissionState;
+}
 
 export interface VoskPlugin {
   //echo(options: { value: string }): Promise<{ value: string }>;
@@ -8,9 +20,10 @@ export interface VoskPlugin {
   pauseListening(): Promise<void>;
   resumeListening(): Promise<void>;
   isListening(): Promise<{ isListening: boolean }>;
-  requestMicrophonePermission(): Promise<void>;  
-
-  // Eventos para escutar transcrições parciais e finais
+  available(): Promise<{ available: boolean }>;
+  requestPermissions(): Promise<PermissionStatus>;
+  
+  // Listeners
   addListener(
     eventName: 'partialResult',
     listener: (data: { matches: string }) => void
@@ -24,6 +37,6 @@ export interface VoskPlugin {
 
   addListener(
     eventName: 'onResult',
-    listener: (data: { final: string }) => void
+    listener: (data: { result: string }) => void
   ): Promise<PluginListenerHandle>;
 }

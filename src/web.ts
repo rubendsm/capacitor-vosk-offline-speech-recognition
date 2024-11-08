@@ -1,8 +1,14 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { VoskPlugin } from './definitions';
+import type { PermissionStatus, VoskPlugin } from './definitions';
 
 export class VoskWeb extends WebPlugin implements VoskPlugin {
+  requestPermissions(): Promise<PermissionStatus> {
+    throw new Error('Method not implemented.');
+  }
+  available(): Promise<{ available: boolean; }> {
+    throw new Error('Method not implemented.');
+  }
   pauseListening(): Promise<void> {
     throw new Error('Method not implemented.');
   }
@@ -18,8 +24,6 @@ export class VoskWeb extends WebPlugin implements VoskPlugin {
   isListening(): Promise<{ isListening: boolean; }> {
     throw new Error('Method not implemented.');
   }
-  requestMicrophonePermission(): Promise<void> {
-    throw new Error('Method not implemented.');
-  }
+ 
 
 }

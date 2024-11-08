@@ -18,10 +18,12 @@ npx cap sync
 * [`pauseListening()`](#pauselistening)
 * [`resumeListening()`](#resumelistening)
 * [`isListening()`](#islistening)
-* [`requestMicrophonePermission()`](#requestmicrophonepermission)
+* [`available()`](#available)
+* [`requestPermissions()`](#requestpermissions)
 * [`addListener('partialResult', ...)`](#addlistenerpartialresult-)
 * [`addListener('onResult', ...)`](#addlisteneronresult-)
 * [Interfaces](#interfaces)
+* [Type Aliases](#type-aliases)
 
 </docgen-index>
 
@@ -75,11 +77,24 @@ isListening() => Promise<{ isListening: boolean; }>
 --------------------
 
 
-### requestMicrophonePermission()
+### available()
 
 ```typescript
-requestMicrophonePermission() => Promise<void>
+available() => Promise<{ available: boolean; }>
 ```
+
+**Returns:** <code>Promise&lt;{ available: boolean; }&gt;</code>
+
+--------------------
+
+
+### requestPermissions()
+
+```typescript
+requestPermissions() => Promise<PermissionStatus>
+```
+
+**Returns:** <code>Promise&lt;<a href="#permissionstatus">PermissionStatus</a>&gt;</code>
 
 --------------------
 
@@ -103,13 +118,13 @@ addListener(eventName: 'partialResult', listener: (data: { matches: string; }) =
 ### addListener('onResult', ...)
 
 ```typescript
-addListener(eventName: 'onResult', listener: (data: { final: string; }) => void) => Promise<PluginListenerHandle>
+addListener(eventName: 'onResult', listener: (data: { result: string; }) => void) => Promise<PluginListenerHandle>
 ```
 
-| Param           | Type                                               |
-| --------------- | -------------------------------------------------- |
-| **`eventName`** | <code>'onResult'</code>                            |
-| **`listener`**  | <code>(data: { final: string; }) =&gt; void</code> |
+| Param           | Type                                                |
+| --------------- | --------------------------------------------------- |
+| **`eventName`** | <code>'onResult'</code>                             |
+| **`listener`**  | <code>(data: { result: string; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
@@ -119,10 +134,25 @@ addListener(eventName: 'onResult', listener: (data: { final: string; }) => void)
 ### Interfaces
 
 
+#### PermissionStatus
+
+| Prop                    | Type                                                        | Description                                                                                                                                                                      |
+| ----------------------- | ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`speechRecognition`** | <code><a href="#permissionstate">PermissionState</a></code> | Permission state for speechRecognition alias. On Android it requests/checks RECORD_AUDIO permission On iOS it requests/checks the speech recognition and microphone permissions. |
+
+
 #### PluginListenerHandle
 
 | Prop         | Type                                      |
 | ------------ | ----------------------------------------- |
 | **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
+
+
+### Type Aliases
+
+
+#### PermissionState
+
+<code>'prompt' | 'prompt-with-rationale' | 'granted' | 'denied'</code>
 
 </docgen-api>

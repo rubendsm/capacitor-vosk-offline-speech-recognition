@@ -30,20 +30,21 @@ public class Vosk implements RecognitionListener {
             StorageService.unpack(context, "vosk-model-small-pt", "model",
                     (unpackedModel) -> {
                         this.model = unpackedModel;
-                        Log.d("Vosk", "Modelo carregado com sucesso!");
+                        Log.d("Vosk", "Model load successfully");
                     },
                     (exception) -> {
-                        throw new RuntimeException("Falha ao descompactar o modelo: " + exception.getMessage());
+                        throw new RuntimeException("Error no model:" + exception.getMessage());
                     });
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao inicializar o modelo: " + e.getMessage());
+            throw new RuntimeException("Error on initiate the model: " + e.getMessage());
         }
     }
 
     // Inicia o reconhecimento de voz
     public void startListening(RecognitionListener listener) throws IOException {
+
         if (model == null) {
-            throw new RuntimeException("Modelo não carregado.");
+            throw new RuntimeException("Error on initiate the model");
         }
 
         recognizer = new Recognizer(model, 16000.0f);

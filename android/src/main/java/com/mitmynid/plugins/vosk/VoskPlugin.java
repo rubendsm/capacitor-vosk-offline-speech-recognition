@@ -10,19 +10,20 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.getcapacitor.JSObject;
+import com.getcapacitor.PermissionState;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
+import com.getcapacitor.annotation.Permission;
+
 import org.vosk.android.RecognitionListener;
 
-@CapacitorPlugin(name = "Vosk")
+@CapacitorPlugin(name = "Vosk", permissions = { @Permission(strings = { Manifest.permission.RECORD_AUDIO }, alias = "speechRecognition") })
 public class VoskPlugin extends Plugin {
 
-    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 1;
     private Vosk voskImplementation = new Vosk();
-    RecognitionListener recognitionListener;
-    private StringBuilder partialResults = new StringBuilder();
+
 
     @Override
     public void load() {
@@ -35,18 +36,6 @@ public class VoskPlugin extends Plugin {
                             voskImplementation.initModel(context);
                         }
                 );
-    }
-
-
-    // Request microphone permission
-    @PluginMethod
-    public void requestMicrophonePermission(PluginCall call) {
-        Context context = getContext();
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_RECORD_AUDIO_PERMISSION);
-        } else {
-            call.resolve();
-        }
     }
 
     // Initialize speech recognition model
@@ -62,11 +51,32 @@ public class VoskPlugin extends Plugin {
         }
     }
 
+    @PluginMethod
+    public void available(PluginCall call) {
+        boolean val = isSpeechRecognitionAvailable();
+        JSObject result = new JSObject();
+        result.put("available", val);
+        call.resolve(result);
+    }
+
+    private boolean isSpeechRecognitionAvailable() {
+        return SpeechRecognizer.isRecognitionAvailable(bridge.getContext());
+    }
+
     // Start microphone listening
     @PluginMethod
     public void startListening(PluginCall call) {
         try {
-            requestMicrophonePermission(call);
+
+            if (!isSpeechRecognitionAvailable()) {
+                call.unavailable("Speech recognition service is not available.");
+                return;
+
+            }
+            if (getPermissionState("speechRecognition") != PermissionState.GRANTED) {
+                call.reject("requestPermission");
+                return;
+            }
 
             RecognitionListener recognitionListener = new RecognitionListener() {
                 /*Called when partial recognition result is available.*/
@@ -82,7 +92,7 @@ public class VoskPlugin extends Plugin {
 
                             notifyListeners("partialResult", result);
 
-                            //Log.d("Vosk", "Partial result enviado para listener: " + partialResult);
+                            Log.d("Vosk", "Partial result enviado para listener: " + result);
                         } catch (Exception e) {
                             call.reject("Failed to process partial result: " + e.getMessage());
                         }
@@ -101,6 +111,7 @@ public class VoskPlugin extends Plugin {
                         result.put("result", resultText);
 
                         notifyListeners("onResult", result);
+                        Log.d("Vosk", "result: " + result);
                     } catch (Exception e) {
                         //Log.e("Vosk", "Erro ao processar hypothesis: " + e.getMessage());
                         call.reject("Failed to process result: " + e.getMessage());
@@ -136,7 +147,6 @@ public class VoskPlugin extends Plugin {
                     call.reject("Speech recognition timed out.");
                 }
             };
-
             voskImplementation.startListening(recognitionListener);
 
         } catch (Exception e) {
