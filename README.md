@@ -1,11 +1,24 @@
-# @capacitor-community/vosk
+# vosk-offline-speech-recognition
 
-Offline speech recognition
+Capacitor Plugin for Ionic - Offline Speech Recognition with Vosk Android
+
+This project uses the Vosk Android library, which is licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+## Requirements
+
+You will need to download the Vosk models from the following link:
+
+[Vosk Models](https://alphacephei.com/vosk/models)
+
+1. Download the smallest Portuguese model: `vosk-model-small-pt-0.3`
+2. Rename the model to `vosk-model-small-pt`.
+3. Place the model in the following directory: `yourIonicApp\android\app\src\main\assets`
+
 
 ## Install
 
 ```bash
-npm install @capacitor-community/vosk
+npm npm i vosk-offline-speech-recognition
 npx cap sync
 ```
 
