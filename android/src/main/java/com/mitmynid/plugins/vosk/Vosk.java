@@ -23,27 +23,28 @@ public class Vosk implements RecognitionListener {
     private StringBuilder partialResults = new StringBuilder();
     private String finalResult = "";
 
-    // Método para inicializar o modelo
+    // Método para iniciar o modelo
     public void initModel(Context context) {
         try {
             AssetManager assetManager = context.getAssets();
             StorageService.unpack(context, "vosk-model-small-pt", "model",
                     (unpackedModel) -> {
                         this.model = unpackedModel;
-                        Log.d("Vosk", "Modelo carregado com sucesso!");
+                        Log.d("Vosk", "Model load successfully");
                     },
                     (exception) -> {
-                        throw new RuntimeException("Falha ao descompactar o modelo: " + exception.getMessage());
+                        throw new RuntimeException("Error no model:" + exception.getMessage());
                     });
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao inicializar o modelo: " + e.getMessage());
+            throw new RuntimeException("Error on initiate the model: " + e.getMessage());
         }
     }
 
     // Inicia o reconhecimento de voz
     public void startListening(RecognitionListener listener) throws IOException {
+
         if (model == null) {
-            throw new RuntimeException("Modelo não carregado.");
+            throw new RuntimeException("Error on initiate the model");
         }
 
         recognizer = new Recognizer(model, 16000.0f);
@@ -59,7 +60,24 @@ public class Vosk implements RecognitionListener {
         }
     }
 
-    // Métodos para os listeners do reconhecimento de fala
+    public void pause(boolean checked) {
+        if (speechService != null) {
+            speechService.setPause(checked);
+            if (checked){
+                isListening = false;
+            } else {
+                isListening = true;
+            }
+        }
+    }
+
+    /*Resets recognizer in a thread, starts recognition over again*/
+    public void reset() {
+        if (speechService != null) {
+            speechService.reset();
+        }
+    }
+
     @Override
     public void onPartialResult(String hypothesis) {
         if (hypothesis != null && !hypothesis.isEmpty()) {
@@ -79,12 +97,12 @@ public class Vosk implements RecognitionListener {
 
     @Override
     public void onError(Exception exception) {
-        Log.e("Vosk", "Erro no reconhecimento de fala: " + exception.getMessage());
+        Log.e("Vosk", "Error on speech recognition" + exception.getMessage());
     }
 
     @Override
     public void onTimeout() {
-        Log.e("Vosk", "Reconhecimento de fala expirou.");
+        Log.e("Vosk", "Expired");
     }
 
     // Getter para o estado de escuta

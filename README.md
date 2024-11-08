@@ -1,11 +1,24 @@
-# @capacitor-community/vosk
+# vosk-offline-speech-recognition
 
-Offline speech recognition
+Capacitor Plugin for Ionic - Offline Speech Recognition with Vosk Android
+
+This project uses the Vosk Android library, which is licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+## Requirements
+
+You will need to download the Vosk models from the following link:
+
+[Vosk Models](https://alphacephei.com/vosk/models)
+
+1. Download the smallest Portuguese model: `vosk-model-small-pt-0.3`
+2. Rename the model to `vosk-model-small-pt`.
+3. Place the model in the following directory: `yourIonicApp\android\app\src\main\assets`
+
 
 ## Install
 
 ```bash
-npm install @capacitor-community/vosk
+npm npm i vosk-offline-speech-recognition
 npx cap sync
 ```
 
@@ -13,45 +26,22 @@ npx cap sync
 
 <docgen-index>
 
-* [`echo(...)`](#echo)
-* [`initModel()`](#initmodel)
 * [`startListening()`](#startlistening)
 * [`stopListening()`](#stoplistening)
+* [`pauseListening()`](#pauselistening)
+* [`resumeListening()`](#resumelistening)
 * [`isListening()`](#islistening)
-* [`requestMicrophonePermission()`](#requestmicrophonepermission)
+* [`available()`](#available)
+* [`requestPermissions()`](#requestpermissions)
 * [`addListener('partialResult', ...)`](#addlistenerpartialresult-)
-* [`addListener('finalResult', ...)`](#addlistenerfinalresult-)
 * [`addListener('onResult', ...)`](#addlisteneronresult-)
 * [Interfaces](#interfaces)
+* [Type Aliases](#type-aliases)
 
 </docgen-index>
 
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
-
-### echo(...)
-
-```typescript
-echo(options: { value: string; }) => Promise<{ value: string; }>
-```
-
-| Param         | Type                            |
-| ------------- | ------------------------------- |
-| **`options`** | <code>{ value: string; }</code> |
-
-**Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
-
---------------------
-
-
-### initModel()
-
-```typescript
-initModel() => Promise<void>
-```
-
---------------------
-
 
 ### startListening()
 
@@ -71,22 +61,53 @@ stopListening() => Promise<void>
 --------------------
 
 
-### isListening()
+### pauseListening()
 
 ```typescript
-isListening() => Promise<{ listening: boolean; }>
+pauseListening() => Promise<void>
 ```
-
-**Returns:** <code>Promise&lt;{ listening: boolean; }&gt;</code>
 
 --------------------
 
 
-### requestMicrophonePermission()
+### resumeListening()
 
 ```typescript
-requestMicrophonePermission() => Promise<void>
+resumeListening() => Promise<void>
 ```
+
+--------------------
+
+
+### isListening()
+
+```typescript
+isListening() => Promise<{ isListening: boolean; }>
+```
+
+**Returns:** <code>Promise&lt;{ isListening: boolean; }&gt;</code>
+
+--------------------
+
+
+### available()
+
+```typescript
+available() => Promise<{ available: boolean; }>
+```
+
+**Returns:** <code>Promise&lt;{ available: boolean; }&gt;</code>
+
+--------------------
+
+
+### requestPermissions()
+
+```typescript
+requestPermissions() => Promise<PermissionStatus>
+```
+
+**Returns:** <code>Promise&lt;<a href="#permissionstatus">PermissionStatus</a>&gt;</code>
 
 --------------------
 
@@ -94,29 +115,13 @@ requestMicrophonePermission() => Promise<void>
 ### addListener('partialResult', ...)
 
 ```typescript
-addListener(eventName: 'partialResult', listener: (result: { partial: string; }) => void) => Promise<PluginListenerHandle>
+addListener(eventName: 'partialResult', listener: (data: { matches: string; }) => void) => Promise<PluginListenerHandle>
 ```
 
-| Param           | Type                                                   |
-| --------------- | ------------------------------------------------------ |
-| **`eventName`** | <code>'partialResult'</code>                           |
-| **`listener`**  | <code>(result: { partial: string; }) =&gt; void</code> |
-
-**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
-
---------------------
-
-
-### addListener('finalResult', ...)
-
-```typescript
-addListener(eventName: 'finalResult', listener: (result: { partial: string; final: string; }) => void) => Promise<PluginListenerHandle>
-```
-
-| Param           | Type                                                                  |
-| --------------- | --------------------------------------------------------------------- |
-| **`eventName`** | <code>'finalResult'</code>                                            |
-| **`listener`**  | <code>(result: { partial: string; final: string; }) =&gt; void</code> |
+| Param           | Type                                                 |
+| --------------- | ---------------------------------------------------- |
+| **`eventName`** | <code>'partialResult'</code>                         |
+| **`listener`**  | <code>(data: { matches: string; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
@@ -126,13 +131,13 @@ addListener(eventName: 'finalResult', listener: (result: { partial: string; fina
 ### addListener('onResult', ...)
 
 ```typescript
-addListener(eventName: 'onResult', listener: (result: { partial: string; final: string; }) => void) => Promise<PluginListenerHandle>
+addListener(eventName: 'onResult', listener: (data: { result: string; }) => void) => Promise<PluginListenerHandle>
 ```
 
-| Param           | Type                                                                  |
-| --------------- | --------------------------------------------------------------------- |
-| **`eventName`** | <code>'onResult'</code>                                               |
-| **`listener`**  | <code>(result: { partial: string; final: string; }) =&gt; void</code> |
+| Param           | Type                                                |
+| --------------- | --------------------------------------------------- |
+| **`eventName`** | <code>'onResult'</code>                             |
+| **`listener`**  | <code>(data: { result: string; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
@@ -142,10 +147,25 @@ addListener(eventName: 'onResult', listener: (result: { partial: string; final: 
 ### Interfaces
 
 
+#### PermissionStatus
+
+| Prop                    | Type                                                        | Description                                                                                                                                                                      |
+| ----------------------- | ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`speechRecognition`** | <code><a href="#permissionstate">PermissionState</a></code> | Permission state for speechRecognition alias. On Android it requests/checks RECORD_AUDIO permission On iOS it requests/checks the speech recognition and microphone permissions. |
+
+
 #### PluginListenerHandle
 
 | Prop         | Type                                      |
 | ------------ | ----------------------------------------- |
 | **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
+
+
+### Type Aliases
+
+
+#### PermissionState
+
+<code>'prompt' | 'prompt-with-rationale' | 'granted' | 'denied'</code>
 
 </docgen-api>

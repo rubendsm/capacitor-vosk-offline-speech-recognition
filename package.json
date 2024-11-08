@@ -1,6 +1,6 @@
 {
-  "name": "@capacitor-community/vosk",
-  "version": "0.0.1",
+  "name": "vosk-offline-speech-recognition",
+  "version": "1.0.3",
   "description": "Offline speech recognition",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -15,14 +15,14 @@
     "Package.swift",
     "CapacitorCommunityVosk.podspec"
   ],
-  "author": "",
-  "license": "MIT",
+  "author": "rubendsm",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rubendsm/capacitor-offline-speech-recognition.git.git"
+    "url": "git+https://github.com/rubendsm/capacitor-vosk-offline-speech-recognition.git"
   },
   "bugs": {
-    "url": "https://github.com/rubendsm/capacitor-offline-speech-recognition.git/issues"
+    "url": "https://github.com/rubendsm/capacitor-vosk-offline-speech-recognition.git/issues"
   },
   "keywords": [
     "capacitor",
